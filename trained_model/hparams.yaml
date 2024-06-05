@@ -1,0 +1,62 @@
+files_dict:
+  data_los_60GHz_olp_24_12: &id001 !!python/tuple
+  - 0
+  - 0.5
+  - 0.5
+  data_los_60GHz_olp_24_4: *id001
+  data_los_60GHz_olp_24_5: &id002 !!python/tuple
+  - 0
+  - 0
+  - 0.5
+  data_los_60GHz_olp_24_6: *id002
+  data_los_60GHz_olp_32_12: *id001
+  data_los_60GHz_olp_32_16: *id001
+  data_los_60GHz_olp_32_4: *id001
+  data_los_60GHz_olp_32_6: &id003 !!python/tuple
+  - 0.9
+  - 0.05
+  - 0.05
+  data_los_60GHz_olp_32_8: *id002
+  data_los_60GHz_olp_32_9: *id003
+  data_los_60GHz_olp_48_16: *id001
+  data_los_60GHz_olp_64_18: *id003
+  data_los_60GHz_olp_64_9: *id003
+  urban_128_32: *id001
+  urban_24_12: *id001
+  urban_24_4: *id001
+  urban_24_5: *id002
+  urban_24_6: *id002
+  urban_32_12: *id001
+  urban_32_16: *id001
+  urban_32_4: *id001
+  urban_32_6: *id003
+  urban_32_8: *id002
+  urban_32_9: *id003
+  urban_48_12: *id002
+  urban_48_16: *id001
+  urban_48_24: *id001
+  urban_48_8: *id001
+  urban_64_12: *id002
+  urban_64_15: *id002
+  urban_64_18: *id003
+  urban_64_21: *id002
+  urban_64_24: *id001
+  urban_64_32: !!python/tuple
+  - 0
+  - 0.05
+  - 0.05
+  urban_64_6: *id001
+  urban_64_9: *id003
+hc:
+- 4
+- 16
+- 16
+- 32
+- 32
+- 16
+- 16
+heads: 1
+lr: 0.0007
+test_batch_size: 1
+train_batch_size: 16
+val_batch_size: 16
