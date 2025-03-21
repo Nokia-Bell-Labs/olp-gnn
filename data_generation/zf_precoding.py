@@ -48,17 +48,15 @@ def data_generation_zf(n, channel_gen, M, K, papi_events=None, verbose=True):
     flops = []
     for i in range(n):
         sol = zeroforcing(channel_gen, M, K, papi_events)
-        SINR.append(sol[0])
+        cur_SINR = 10*log10(sol[0])  # from linear to dB
+        SINR.append(cur_SINR)
         Delta.append(sol[1])
         G.append(sol[3])
         flops.append(sol[4])
         if verbose:
             print(('ZF sample number {} done in {:.2e}s'
                    ', FLOPS={:.2e}, SINR={:.2e}dB')
-                  .format(i, sol[2], sol[4], sol[0]))
-
-    for i in range(n):  # from linear to dB
-        SINR[i] = 10*log10(SINR[i])
+                  .format(i, sol[2], sol[4], cur_SINR))
 
     out_dict = {'SINR': SINR, 'Delta': Delta, 'G': G, 'flops': flops}
     return out_dict
