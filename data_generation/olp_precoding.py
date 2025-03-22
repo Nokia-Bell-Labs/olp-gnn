@@ -11,6 +11,13 @@ import time
 from pypapi import papi_high
 
 
+# Function that computes the SINR from the matrix A
+def sinr_from_A(A, rho_d):
+    A_diag = (np.abs(np.diag(A)))**2*rho_d
+    A = rho_d*np.linalg.norm(A, axis=1, keepdims=False)**2
+    return A_diag/(1+A-A_diag)
+
+
 # SOCP problem solver
 # (G_dague, P_G, rho_d) set the problem's constraints
 # t: is the currently computed lower bound sinr
@@ -47,7 +54,8 @@ def opti_OLP(t, solver, G_dague, P_G, rho_d, M, K):
 
 # Function solving the B-SOCP by performing bisection search on top
 # of opti_OLP (SOCP) calls
-def OLP_solver(low, up, eps, solver, channel_gen, M, K, papi_events):
+def OLP_solver(low, up, eps, solver, channel_gen, M, K, papi_events,
+               feas_sinr_tol, feas_power_tol):
     start_time = time.process_time()
     if papi_events is not None:
         papi_high.start_counters(papi_events)
@@ -70,7 +78,19 @@ def OLP_solver(low, up, eps, solver, channel_gen, M, K, papi_events):
         try:
             prob, A_test, U_test = opti_OLP(
                 tSINR, solver, G_dague, P_G, rho_d, M, K)
-            is_feasible = prob.value < np.inf
+            is_feasible = False
+            if prob.value is not None and prob.value < np.inf:
+                # the problem is feasible according to the solver
+                is_feasible = True
+                # check if the solution satisfies the SINR constraints
+                min_sinr = sinr_from_A(A_test.value, rho_d).min()
+                if min_sinr < tSINR * (1-feas_sinr_tol):
+                    is_feasible = False
+                # check if the solution satisfies the power constraints
+                Delta = G_dague @ A_test.value + P_G @ U_test.value
+                max_power = np.linalg.norm(Delta, ord=2, axis=1).max()
+                if max_power > 1+feas_power_tol:
+                    is_feasible = False
         except cp.SolverError:
             # print('Solver MOSEK status UNKNOWN')
             is_feasible = False
@@ -105,9 +125,11 @@ def data_generation_olp(n, channel_gen, M, K, papi_events=None, verbose=True):
     U = []
     low, up = 0, 10**6
     eps = 0.01
+    feas_sinr_tol, feas_power_tol = 1e-3, 1e-6
 
     for i in range(n):
-        sol = OLP_solver(low, up, eps, 'MOSEK', channel_gen, M, K, papi_events)
+        sol = OLP_solver(low, up, eps, 'MOSEK', channel_gen, M, K, papi_events,
+                         feas_sinr_tol, feas_power_tol)
         cur_SINR = 10*log10(sol[0])  # from linear to dB
         SINR.append(cur_SINR)
         Delta.append(sol[1])
