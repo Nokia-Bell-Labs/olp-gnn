@@ -64,3 +64,19 @@ Then, to train an OLP-GNN model:
 ```python gnn_train.py```
 
 Finally, the obtained model checkpoint (.ckpt) can be evaluated following the instructions in the above quickstart section.
+
+## Citation
+
+If you use this code in your research, please cite:
+
+```bibtex
+@inproceedings{parlier2024learning,
+  title={Learning Optimal Linear Precoding for Cell-Free Massive MIMO with GNN},
+  author={Parlier, Benjamin and Sala{\"u}n, Lou and Yang, Hong},
+  booktitle={Joint European Conference on Machine Learning and Knowledge Discovery in Databases},
+  pages={72--88},
+  year={2024},
+  organization={Springer},
+  note={Preprint available at https://arxiv.org/abs/2406.04456}
+}
+```
